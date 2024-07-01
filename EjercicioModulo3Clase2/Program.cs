@@ -1,4 +1,6 @@
 using EjercicioModulo3Clase2.Repository;
+using EjercicioModulo3Clase2.Services;
+using EjercicioModulo3Clase2.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace EjercicioModulo3Clase2
@@ -15,10 +17,14 @@ namespace EjercicioModulo3Clase2
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            String connection =  builder.Configuration.GetConnectionString("DefaulConnection");
             builder.Services.AddDbContext<ToDoListDBContext>(opt =>
             {
-                opt.UseSqlServer("Data Source=DESKTOP-KICGD37;Initial Catalog=ToDoListDB;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+                opt.UseSqlServer(connection);
             });
+
+            builder.Services.AddScoped<ITasksService, TasksService>();
 
             var app = builder.Build();
 

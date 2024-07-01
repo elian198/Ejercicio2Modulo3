@@ -1,6 +1,6 @@
 ﻿using EjercicioModulo3Clase2.Domain.Entities;
-using EjercicioModulo3Clase2.Repository;
 using Microsoft.AspNetCore.Mvc;
+using EjercicioModulo3Clase2.Services.Interfaces;
 
 namespace EjercicioModulo3Clase2.Controllers
 {
@@ -17,11 +17,11 @@ namespace EjercicioModulo3Clase2.Controllers
          * 5 - En este controlador, realizar los siguientes ejercicios:
          */
         #endregion
-        private ToDoListDBContext _context;
+        private ITasksService _clienteService;
 
-        public TaskController(ToDoListDBContext context)
+        public TaskController(ITasksService clienteService)
         {
-            _context = context;
+            _clienteService = clienteService;
         }
 
         #region Ejercicio 1
@@ -29,7 +29,7 @@ namespace EjercicioModulo3Clase2.Controllers
         [HttpGet]
         public ActionResult getTask()
         {
-            return Ok(_context.Tasks.ToList());
+            return Ok(_clienteService.getTasks());
         }
         #endregion
 
@@ -38,7 +38,7 @@ namespace EjercicioModulo3Clase2.Controllers
         [HttpGet("/{id}")]
         public ActionResult getTaskById([FromRoute] int id)
         {
-            return Ok(_context.Tasks.Where(task => task.Id == id));
+            return Ok(_clienteService.getTaskById(id));
         }
         #endregion
 
@@ -47,8 +47,7 @@ namespace EjercicioModulo3Clase2.Controllers
         [HttpPost]
         public ActionResult saveTask([FromBody] Tasks task)
         {
-            _context.Add(task);
-            _context.SaveChanges();
+            _clienteService.saveTask(task);
             return Ok();
         }
         #endregion
@@ -57,12 +56,8 @@ namespace EjercicioModulo3Clase2.Controllers
         // Crear un endpoint para marcar una tarea como completada usando HTTP PUT
         [HttpPut("/completar/{id}")]
         public ActionResult putCompleteTask([FromRoute] int id)
-        {
-            Tasks task = _context.Tasks.FirstOrDefault(task => task.Id == id);
-            task.IsCompleted = true;
-            _context.SaveChanges();
-            return Ok(task);
-                                                                 
+        { 
+            return Ok(_clienteService.putCompleteTask(id));                                                         
         }
         #endregion
 
@@ -72,10 +67,7 @@ namespace EjercicioModulo3Clase2.Controllers
         public ActionResult putDarBaja([FromRoute] int id)
 
         {
-            Tasks task = _context.Tasks.FirstOrDefault(task => task.Id == id);
-            task.IsActive = false;
-            _context.SaveChanges();
-            return Ok(task);
+            return Ok(_clienteService.putDarBaja(id));
         }       
     }
     #endregion
